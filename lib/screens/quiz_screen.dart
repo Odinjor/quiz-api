@@ -114,17 +114,14 @@ class _QuizScreenState extends State<QuizScreen> {
     );
   }
 
-  Widget _buildAnswerButton(String answer, Question question) {
+    Widget _buildAnswerButton(String answer, Question question) {
     Color? buttonColor;
-    String? iconPath;
 
     if (_answered) {
       if (answer == question.correctAnswer) {
         buttonColor = Colors.green.shade100;
-        iconPath = 'assets/icons/correct.png';
       } else if (answer == _selectedAnswer) {
         buttonColor = Colors.red.shade100;
-        iconPath = 'assets/icons/incorrect.png';
       }
     }
 
@@ -137,23 +134,7 @@ class _QuizScreenState extends State<QuizScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         ),
         onPressed: _answered ? null : () => _selectAnswer(answer, question),
-        child: Row(
-          children: [
-            Expanded(child: Text(answer)),
-            if (iconPath != null)
-              Image.asset(
-                iconPath,
-                width: 24,
-                height: 24,
-                errorBuilder: (_, __, ___) => Icon(
-                  answer == question.correctAnswer
-                      ? Icons.check_circle
-                      : Icons.cancel,
-                  size: 20,
-                ),
-              ),
-          ],
-        ),
+        child: Text(answer),
       ),
     );
   }

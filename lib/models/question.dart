@@ -8,38 +8,27 @@ class Question {
     required this.answers,
     required this.correctAnswer,
   });
+factory Question.fromJson(Map<String, dynamic> json) {
+  final answerList = (json['answers'] as List? ?? []);
 
-  factory Question.fromJson(Map<String, dynamic> json) {
-    final answerMap = Map<String, dynamic>.from(
-      json['answers'] as Map? ?? {},
-    );
+  // Extract all answer text strings
+  final answers = answerList
+      .map((a) => a['text']?.toString() ?? '')
+      .where((t) => t.isNotEmpty)
+      .toList();
 
-    final correctMap = Map<String, dynamic>.from(
-      json['correct_answers'] as Map? ?? {},
-    );
+  // Find the correct answer text directly from isCorrect flag
+  final correctAnswer = answerList
+      .firstWhere(
+        (a) => a['isCorrect'] == true,
+        orElse: () => {'text': ''},
+      )['text']
+      ?.toString() ?? '';
 
-    // Build answer list, skip null/empty values
-    final answers = answerMap.entries
-        .where((e) => e.value != null && e.value.toString().isNotEmpty)
-        .map((e) => e.value.toString())
-        .toList();
-
-    // Find which answer key is correct (value == "true")
-    final correctKey = correctMap.entries
-        .firstWhere(
-          (e) => e.value == 'true',
-          orElse: () => MapEntry('', ''),
-        )
-        .key;
-
-    // correctKey is like "answer_a_correct" — strip "_correct"
-    final answerKey = correctKey.replaceAll('_correct', '');
-    final correctAnswer = answerMap[answerKey]?.toString() ?? '';
-
-    return Question(
-      questionText: json['question']?.toString() ?? 'No question',
-      answers: answers,
-      correctAnswer: correctAnswer,
-    );
-  }
+  return Question(
+    questionText: json['text']?.toString() ?? 'No question',
+    answers: answers,
+    correctAnswer: correctAnswer,
+  );
+}
 }
